@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in - Google Accounts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --blue: #1a73e8;
+    --blue-hover: #1765cc;
+    --blue-bg: rgba(66, 133, 244, 0.08);
+    --text: #202124;
+    --text-sec: #5f6368;
+    --border: #dadce0;
+    --border-hover: #80868b;
+    --error: #d93025;
+    --bg: #ffffff;
+    --bg-light: #f8f9fa;
+    --green: #1e8e3e;
+  }
+
+  html, body { height: 100%; }
+  body {
+    font-family: 'Roboto', Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .demo-banner {
+    background: #fef7e0;
+    color: #b06000;
+    text-align: center;
+    padding: 6px 12px;
+    font-size: 12px;
+    border-bottom: 1px solid #f9d96e;
+    font-weight: 500;
+  }
+
+  .page {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 450px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 48px 40px 36px;
+    position: relative;
+  }
+
+  .logo {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: center;
+  }
+  .logo svg { height: 24px; width: 74px; }
+
+  .card-title {
+    text-align: center;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .card-subtitle {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 24px;
+    line-height: 1.4;
+  }
+
+  /* Floating label input (Material style) */
+  .field {
+    position: relative;
+    margin: 24px 0;
+  }
+  .field input {
+    width: 100%;
+    padding: 13px 16px;
+    font-size: 16px;
+    font-family: inherit;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    transition: border-color 0.15s;
+    height: 56px;
+  }
+  .field input:hover { border-color: var(--border-hover); }
+  .field input:focus {
+    border-color: var(--blue);
+    border-width: 2px;
+    padding: 12px 15px;
+  }
+  .field label {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-sec);
+    font-size: 16px;
+    pointer-events: none;
+    background: white;
+    padding: 0 4px;
+    transition: all 0.15s ease;
+    max-width: calc(100% - 24px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .field input:focus + label,
+  .field input:not(:placeholder-shown) + label {
+    top: 0;
+    font-size: 11px;
+    color: var(--blue);
+  }
+  .field.error input { border-color: var(--error); border-width: 2px; padding: 12px 15px; }
+  .field.error input:focus + label,
+  .field.error input:not(:placeholder-shown) + label { color: var(--error); }
+  .field.error label { color: var(--error); }
+
+  .error-msg {
+    color: var(--error);
+    font-size: 12px;
+    margin-top: 6px;
+    padding-left: 4px;
+    display: none;
+    line-height: 1.4;
+  }
+  .field.error .error-msg { display: block; }
+
+  /* Avatar */
+  .avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #f1f3f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 28px;
+    color: var(--text);
+    font-family: 'Google Sans', sans-serif;
+    overflow: hidden;
+  }
+  .avatar svg { width: 100%; height: 100%; }
+
+  .email-chip {
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-sec);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .email-chip button {
+    background: none;
+    border: none;
+    color: var(--blue);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .email-chip button:hover { background: var(--blue-bg); }
+
+  /* Password field */
+  .pw-wrap { position: relative; }
+  .pw-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--blue);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    padding: 6px 8px;
+    border-radius: 4px;
+  }
+  .pw-toggle:hover { background: var(--blue-bg); }
+
+  /* Caps lock warning */
+  .caps-warning {
+    position: absolute;
+    right: 56px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--error);
+    font-size: 12px;
+    background: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: none;
+  }
+  .caps-warning.show { display: block; }
+
+  .text-link {
+    color: var(--blue);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: inherit;
+    padding: 0;
+  }
+  .text-link:hover { text-decoration: underline; }
+
+  .guest-text {
+    font-size: 14px;
+    color: var(--text-sec);
+    margin-top: 36px;
+    line-height: 1.5;
+  }
+  .guest-text a { color: var(--blue); text-decoration: none; font-weight: 500; }
+  .guest-text a:hover { text-decoration: underline; }
+
+  .button-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-text {
+    background: none;
+    border: none;
+    color: var(--blue);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 16px;
+    font-family: inherit;
+    border-radius: 4px;
+    letter-spacing: 0.25px;
+  }
+  .btn-text:hover { background: var(--blue-bg); }
+
+  .btn-primary {
+    background: var(--blue);
+    color: white;
+    border: none;
+    padding: 9px 24px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, box-shadow 0.15s;
+    min-width: 88px;
+    letter-spacing: 0.25px;
+  }
+  .btn-primary:hover {
+    background: var(--blue-hover);
+    box-shadow: 0 1px 2px rgba(60,64,67,0.3), 0 1px 3px rgba(60,64,67,0.15);
+  }
+  .btn-primary:active {
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    background: #185abc;
+  }
+  .btn-primary:disabled {
+    background: #a1c2fa;
+    cursor: default;
+    box-shadow: none;
+  }
+
+  /* Footer */
+  .footer {
+    background: var(--bg-light);
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-sec);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer select {
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--text-sec);
+    cursor: pointer;
+    outline: none;
+    padding: 4px;
+  }
+  .footer select:hover { color: var(--text); }
+  .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+  .footer-links a {
+    color: var(--text-sec);
+    text-decoration: none;
+  }
+  .footer-links a:hover { color: var(--text); text-decoration: underline; }
+
+  /* Steps */
+  .step { display: none; }
+  .step.active { display: block; animation: slideIn 0.25s cubic-bezier(0.4,0,0.2,1); }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(16px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Strength meter */
+  .strength-meter { display: flex; gap: 4px; margin-top: 8px; }
+  .strength-bar { flex: 1; height: 3px; background: var(--border); border-radius: 2px; transition: background 0.3s; }
+  .strength-bar.weak { background: var(--error); }
+  .strength-bar.medium { background: #f9ab00; }
+  .strength-bar.strong { background: var(--green); }
+  .strength-text { font-size: 12px; margin-top: 6px; color: var(--text-sec); min-height: 16px; }
+
+  /* Code inputs */
+  .code-inputs {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 24px 0;
+    flex-wrap: wrap;
+  }
+  .code-input {
+    width: 44px;
+    height: 56px;
+    text-align: center;
+    font-size: 24px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    outline: none;
+    font-family: inherit;
+    color: var(--text);
+    background: transparent;
+    transition: border-color 0.15s;
+  }
+  .code-input:hover { border-color: var(--border-hover); }
+  .code-input:focus { border-color: var(--blue); border-width: 2px; }
+
+  /* Success checkmark */
+  .checkmark {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--green);
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: scaleIn 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .checkmark svg {
+    width: 44px;
+    height: 44px;
+    stroke: white;
+    stroke-width: 4;
+    fill: none;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: drawCheck 0.5s 0.2s ease forwards;
+  }
+  @keyframes scaleIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes drawCheck { to { stroke-dashoffset: 0; } }
+
+  .success-text {
+    text-align: center;
+    font-size: 16px;
+    color: var(--text-sec);
+    margin-bottom: 8px;
+  }
+
+  /* Recovery options */
+  .recovery-option {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 12px 0;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .recovery-option:hover { background: var(--bg-light); border-color: var(--border-hover); }
+  .recovery-option.selected { border-color: var(--blue); background: var(--blue-bg); }
+  .recovery-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f1f3f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .recovery-icon svg { width: 20px; height: 20px; color: var(--text-sec); }
+  .recovery-content { flex: 1; }
+  .recovery-title { font-size: 14px; color: var(--text); font-weight: 500; }
+  .recovery-desc { font-size: 13px; color: var(--text-sec); margin-top: 2px; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #323232;
+    color: white;
+    padding: 14px 24px;
+    border-radius: 4px;
+    font-size: 14px;
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 90%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    pointer-events: none;
+  }
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  /* Loading spinner */
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .card {
+      padding: 36px 24px 32px;
+      border: none;
+      max-width: 100%;
+    }
+    .page { padding: 0; align-items: flex-start; }
+    .footer { padding: 12px 16px; flex-direction: column; align-items: flex-start; gap: 8px; }
+    .footer-links { gap: 16px; }
+    .card-title { font-size: 22px; }
+    .code-input { width: 38px; height: 50px; font-size: 20px; }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-banner">Educational demo — no data leaves your browser. Use any email & password.</div>
+
+<div class="page">
+  <div class="card">
+
+    <!-- STEP 1: EMAIL -->
+    <div class="step active" id="step-email">
+      <div class="logo">
+        <svg viewBox="0 0 74 24" xmlns="http://www.w3.org/2000/svg" aria-label="Google">
+          <path fill="#4285F4" d="M9.24 8.19v2.46h5.88c-.18 1.38-.64 2.39-1.34 3.1-.86.86-2.2 1.8-4.54 1.8-3.62 0-6.45-2.92-6.45-6.54s2.83-6.54 6.45-6.54c1.95 0 3.38.77 4.43 1.76L15.4 2.5C13.94 1.08 11.98 0 9.24 0 4.28 0 .11 4.04.11 9s4.17 9 9.13 9c2.68 0 4.7-.88 6.28-2.52 1.62-1.62 2.13-3.91 2.13-5.75 0-.57-.04-1.1-.13-1.54H9.24z"/>
+          <path fill="#EA4335" d="M25 6.19c-3.21 0-5.83 2.44-5.83 5.81 0 3.34 2.62 5.81 5.83 5.81s5.83-2.46 5.83-5.81c0-3.37-2.62-5.81-5.83-5.81zm0 9.33c-1.76 0-3.28-1.45-3.28-3.52 0-2.09 1.52-3.52 3.28-3.52s3.28 1.43 3.28 3.52c0 2.07-1.52 3.52-3.28 3.52z"/>
+          <path fill="#FBBC05" d="M37.92 6.19c-3.21 0-5.83 2.44-5.83 5.81 0 3.34 2.62 5.81 5.83 5.81s5.83-2.46 5.83-5.81c0-3.37-2.62-5.81-5.83-5.81zm0 9.33c-1.76 0-3.28-1.45-3.28-3.52 0-2.09 1.52-3.52 3.28-3.52s3.28 1.43 3.28 3.52c0 2.07-1.52 3.52-3.28 3.52z"/>
+          <path fill="#4285F4" d="M53.5 6.49v.94h-.09c-.57-.68-1.67-1.29-3.06-1.29-2.9 0-5.55 2.55-5.55 5.83 0 3.25 2.65 5.78 5.55 5.78 1.39 0 2.49-.62 3.06-1.32h.09v.83c0 2.22-1.19 3.41-3.1 3.41-1.56 0-2.53-1.12-2.93-2.07l-2.22.92c.64 1.54 2.33 3.43 5.15 3.43 2.99 0 5.52-1.76 5.52-6.05V6.49H53.5zm-2.93 9.03c-1.76 0-3.1-1.5-3.1-3.55 0-2.07 1.34-3.54 3.1-3.54 1.74 0 3.1 1.54 3.1 3.56.01 2.05-1.36 3.53-3.1 3.53z"/>
+          <path fill="#34A853" d="M58 0h2.5v18H58z"/>
+          <path fill="#EA4335" d="M68.26 15.52c-1.3 0-2.22-.59-2.82-1.76l7.77-3.21-.26-.66c-.48-1.3-1.96-3.7-4.97-3.7-2.99 0-5.48 2.35-5.48 5.81 0 3.26 2.46 5.81 5.74 5.81 2.66 0 4.2-1.63 4.84-2.57l-1.98-1.32c-.66.96-1.56 1.6-2.86 1.6zm-.18-7.15c1.03 0 1.91.53 2.2 1.28l-5.25 2.17c0-2.44 1.73-3.45 3.05-3.45z"/>
+        </svg>
+      </div>
+
+      <h1 class="card-title">Sign in</h1>
+      <p class="card-subtitle">Use your Google Account</p>
+
+      <div class="field" id="email-field">
+        <input type="email" id="email-input" placeholder=" " autocomplete="username" autocapitalize="none" spellcheck="false">
+        <label for="email-input">Email or phone</label>
+        <div class="error-msg" id="email-error"></div>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <button class="text-link" id="forgot-email-btn">Forgot email?</button>
+      </div>
+
+      <p class="guest-text">Not your computer? Use Guest mode to sign in privately. <a href="#">Learn more about using Guest mode</a></p>
+
+      <div class="button-row">
+        <button class="btn-text" id="create-account-btn">Create account</button>
+        <button class="btn-primary" id="email-next-btn">Next</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: PASSWORD -->
+    <div class="step" id="step-password">
+      <div class="logo">
+        <svg viewBox="0 0 74 24" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M9.24 8.19v2.46h5.88c-.18 1.38-.64 2.39-1.34 3.1-.86.86-2.2 1.8-4.54 1.8-3.62 0-6.45-2.92-6.45-6.54s2.83-6.54 6.45-6.54c1.95 0 3.38.77 4.43 1.76L15.4 2.5C13.94 1.08 11.98 0 9.24 0 4.28 0 .11 4.04.11 9s4.17 9 9.13 9c2.68 0 4.7-.88 6.28-2.52 1.62-1.62 2.13-3.91 2.13-5.75 0-.57-.04-1.1-.13-1.54H9.24z"/><path fill="#EA4335" d="M25 6.19c-3.21 0-5.83 2.44-5.83 5.81 0 3.34 2.62 5.81 5.83 5.81s5.83-2.46 5.83-5.81c0-3.37-2.62-5.81-5.83-5.81zm0 9.33c-1.76 0-3.28-1.45-3.28-3.52 0-2.09 1.52-3.52 3.28-3.52s3.28 1.43 3.28 3.52c0 2.07-1.52 3.52-3.28 3.52z"/><path fill="#FBBC05" d="M37.92 6.19c-3.21 0-5.83 2.44-5.83 5.81 0 3.34 2.62 5.81 5.83 5.81s5.83-2.46 5.83-5.81c0-3.37-2.62-5.81-5.83-5.81zm0 9.33c-1.76 0-3.28-1.45-3.28-3.52 0-2.09 1.52-3.52 3.28-3.52s3.28 1.43 3.28 3.52c0 2.07-1.52 3.52-3.28 3.52z"/><path fill="#4285F4" d="M53.5 6.49v.94h-.09c-.57-.68-1.67-1.29-3.06-1.29-2.9 0-5.55 2.55-5.55 5.83 0 3.25 2.65 5.78 5.55 5.78 1.39 0 2.49-.62 3.06-1.32h.09v.83c0 2.22-1.19 3.41-3.1 3.41-1.56 0-2.53-1.12-2.93-2.07l-2.22.92c.64 1.54 2.33 3.43 5.15 3.43 2.99 0 5.52-1.76 5.52-6.05V6.49H53.5zm-2.93 9.03c-1.76 0-3.1-1.5-3.1-3.55 0-2.07 1.34-3.54 3.1-3.54 1.74 0 3.1 1.54 3.1 3.56.01 2.05-1.36 3.53-3.1 3.53z"/><path fill="#34A853" d="M58 0h2.5v18H58z"/><path fill="#EA4335" d="M68.26 15.52c-1.3 0-2.22-.59-2.82-1.76l7.77-3.21-.26-.66c-.48-1.3-1.96-3.7-4.97-3.7-2.99 0-5.48 2.35-5.48 5.81 0 3.26 2.46 5.81 5.74 5.81 2.66 0 4.2-1.63 4.84-2.57l-1.98-1.32c-.66.96-1.56 1.6-2.86 1.6zm-.18-7.15c1.03 0 1.91.53 2.2 1.28l-5.25 2.17c0-2.44 1.73-3.45 3.05-3.45z"/></svg>
+      </div>
+
+      <div class="avatar" id="user-avatar">A</div>
+      <div class="email-chip">
+        <span id="display-email"></span>
+        <button id="change-account-btn">Change</button>
+      </div>
+
+      <h1 class="card-title" id="password-title">Welcome</h1>
+
+      <div class="field" id="password-field">
+        <div class="pw-wrap">
+          <input type="password" id="password-input" placeholder=" " autocomplete="current-password">
+          <label for="password-input">Enter your password</label>
+          <span class="caps-warning" id="caps-warning">Caps lock is on</span>
+          <button class="pw-toggle" id="pw-toggle" type="button">Show</button>
+        </div>
+        <div class="error-msg" id="password-error"></div>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <button class="text-link" id="forgot-pw-btn">Forgot password?</button>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-text" id="pw-back-btn">Back</button>
+        <button class="btn-primary" id="pw-next-btn">Next</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: FORGOT PASSWORD -->
+    <div class="step" id="step-forgot">
+      <div class="logo">
+        <svg viewBox="0 0 74 24" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M9.24 8.19v2.46h5.88c-.18 1.38-.64 2.39-1.34 3.1-.86.86-2.2 1.8-4.54 1.8-3.62 0-6.45-2.92-6.45-6.54s2.83-6.54 6.45-6.54c1.95 0 3.38.77 4.43 1.76L15.4 2.5C13.94 1.08 11.98 0 9.24 0 4.28 0 .11 4.04.11 9s4.17 9 9.13 9c2.68 0 4.7-.88 6.28-2.52 1.62-1.62 2.13-3.91 2.13-5.75 0-.57-.04-1.1-.13-1.54H9.24z"/><path fill="#EA4335" d="M25 6.19c-3.21 0-5.83 2.44-5.83 5.81 0 3.34 2.62 5.81 5.83 5.81s5.83-2.46 5.83-5.81c0-3.37-2.62-5.81-5.83-5.81zm0 9.33c-1.76 0-3.28-1.45-3.28-3.52 0-2.09 1.52-3.52 3.28-3.52s3.28 1.43 3.28 3.52c0 2.07-1.52 3.52-3.28 3.52z"/><path fill="#FBBC05" d="M37.92 6.19c-3.21 0-5.83 2.44-5.83 5.81 0 3.34 2.62 5.81 5.83 5.81s5.83-2.46 5.83-5.81c0-3.37-2.62-5.81-5.83-5.81zm0 9.33c-1.76 0-3.28-1.45-3.28-3.52 0-2.09 1.52-3.52 3.28-3.52s3.28 1.43 3.28 3.52c0 2.07-1.52 3.52-3.28 3.52z"/><path fill="#4285F4" d="M53.5 6.49v.94h-.09c-.57-.68-1.67-1.29-3.06-1.29-2.9 0-5.55 2.55-5.55 5.83 0 3.25 2.65 5.78 5.55 5.78 1.39 0 2.49-.62 3.06-1.32h.09v.83c0 2.22-1.19 3.41-3.1 3.41-1.56 0-2.53-1.12-2.93-2.07l-2.22.92c.64 1.54 2.33 3.43 5.15 3.43 2.99 0 5.52-1.76 5.52-6.05V6.49H53.5zm-2.93 9.03c-1.76 0-3.1-1.5-3.1-3.55 0-2.07 1.34-3.54 3.1-3.54 1.74 0 3.1 1.54 3.1 3.56.01 2.05-1.36 3.53-3.1 3.53z"/><path fill="#34A853" d="M58 0h2.5v18H58z"/><path fill="#EA4335" d="M68.26 15.52c-1.3 0-2.22-.59-2.82-1.76l7.77-3.21-.26-.66c-.48-1.3-1.96-3.7-4.97-3.7-2.99 0-5.48 2.35-5.48 5.81 0 3.26 2.46 5.81 5.74 5.81 2.66 0 4.2-1.63 4.84-2.57l-1.98-1.32c-.66.96-1.56 1.6-2.86 1.6zm-.18-7.15c1.03 0 1.91.53 2.2 1.28l-5.25 2.17c0-2.44 1.73-3.45 3.05-3.45z"/></svg>
+      </div>
+
+      <h1 class="card-title">Account recovery</h1>
+      <p class="card-subtitle" style="margin-bottom: 16px;">To help protect your account, we'd like to make sure it's really you trying to sign in</p>
+
+      <div class="recovery-option selected" data-method="email">
+        <div class="recovery-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        </div>
+        <div class="recovery-content">
+          <div class="recovery-title">Get a verification code at <span id="recovery-email"></span></div>
+          <div class="recovery-desc">We'll send a 6-digit code to this email</div>
+        </div>
+      </div>
+
+      <div class="recovery-option" data-method="phone">
+        <div class="recovery-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+        </div>
+        <div class="recovery-content">
+          <div class="recovery-title">Get a text message at ••••• ••57</div>
+          <div class="recovery-desc">Standard rates apply</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <button class="text-link" id="try-another-btn">Try another way</button>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-text" id="forgot-cancel-btn">Cancel</button>
+        <button class="btn-primary" id="send-code-btn">Send</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: VERIFICATION CODE -->
+    <div class="step" id="step-code">
+      <div class="logo">
+        <svg viewBox="0 0 74 24" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M9.24 8.19v2.46h5.88c-.18 1.38-.64 2.39-1.34 3.1-.86.86-2.2 1.8-4.54 1.8-3.62 0-6.45-2.92-6.45-6.54s2.83-6.54 6.45-6.54c1.95 0 3.38.77 4.43 1.76L15.4 2.5C13.94 1.08 11.98 0 9.24 0 4.28 0 .11 4.04.11 9s4.17 9 9.13 9c2.68 0 4.7-.88 6.28-2.52 1.62-1.62 2.13-3.91 2.13-5.75 0-.57-.04-1.1-.13-1.54H9.24z"/><path fill="#EA4335" d="M25 6.19c-3.21 0-5.83 2.44-5.83 5.81 0 3.34 2.62 5.81 5.83 5.81s5.83-2.46 5.83-5.81c0-3.37-2.62-5.81-5.83-5.81zm0 9.33c-1.76 0-3.28-1.45-3.28-3.52 0-2.09 1.52-3.52 3.28-3.52s3.28 1.43 3.28 3.52c0 2.07-1.52 3.52-3.28 3.52z"/><path fill="#FBBC05" d="M37.92 6.19c-3.21 0-5.83 2.44-5.83 5.81 0 3.34 2.62 5.81 5.83 5.81s5.83-2.46 5.83-5.81c0-3.37-2.62-5.81-5.83-5.81zm0 9.33c-1.76 0-3.28-1.45-3.28-3.52 0-2.09 1.52-3.52 3.28-3.52s3.28 1.43 3.28 3.52c0 2.07-1.52 3.52-3.28 3.52z"/><path fill="#4285F4" d="M53.5 6.49v.94h-.09c-.57-.68-1.67-1.29-3.06-1.29-2.9 0-5.55 2.55-5.55 5.83 0 3.25 2.65 5.78 5.55 5.78 1.39 0 2.49-.62 3.06-1.32h.09v.83c0 2.22-1.19 3.41-3.1 3.41-1.56 0-2.53-1.12-2.93-2.07l-2.22.92c.64 1.54 2.33 3.43 5.15 3.43 2.99 0 5.52-1.76 5.52-6.05V6.49H53.5zm-2.93 9.03c-1.76 0-3.1-1.5-3.1-3.55 0-2.07 1.34-3.54 3.1-3.54 1.74 0 3.1 1.54 3.1 3.56.01 2.05-1.36 3.53-3.1 3.53z"/><path fill="#34A853" d="M58 0h2.5v18H58z"/><path fill="#EA4335" d="M68.26 15.52c-1.3 0-2.22-.59-2.82-1.76l7.77-3.21-.26-.66c-.48-1.3-1.96-3.7-4.97-3.7-2.99 0-5.48 2.35-5.48 5.81 0 3.26 2.46 5.81 5.74 5.81 2.66 0 4.2-1.63 4.84-2.57l-1.98-1.32c-.66.96-1.56 1.6-2.86 1.6zm-.18-7.15c1.03 0 1.91.53 2.2 1.28l-5.25 2.17c0-2.44 1.73-3.45 3.05-3.45z"/></svg>
+      </div>
+
+      <h1 class="card-title">Enter the code</h1>
+      <p class="card-subtitle" style="margin-bottom: 16px;">We sent a 6-digit verification code to <strong id="code-email"></strong>. This code expires shortly.</p>
+
+      <div class="code-inputs" id="code-inputs">
+        <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Digit 1">
+        <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Digit 2">
+        <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Digit 3">
+        <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Digit 4">
+        <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Digit 5">
+        <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Digit 6">
+      </div>
+
+      <div style="text-align:center; margin-top: 16px;">
+        <button class="text-link" id="resend-code-btn">Didn't get a code?</button>
+      </div>
+
+      <div style="margin-top: 12px; text-align: center; padding: 12px; background: #e8f0fe; border-radius: 8px; font-size: 13px; color: var(--text-sec);">
+        <strong>Demo tip:</strong> Use code <strong id="demo-code"></strong>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-text" id="code-cancel-btn">Cancel</button>
+        <button class="btn-primary" id="verify-btn">Verify</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: RESET PASSWORD -->
+    <div class="step" id="step-reset">
+      <div class="logo">
+        <svg viewBox="0 0 74 24" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M9.24 8.19v2.46h5.88c-.18 1.38-.64 2.39-1.34 3.1-.86.86-2.2 1.8-4.54 1.8-3.62 0-6.45-2.92-6.45-6.54s2.83-6.54 6.45-6.54c1.95 0 3.38.77 4.43 1.76L15.4 2.5C13.94 1.08 11.98 0 9.24 0 4.28 0 .11 4.04.11 9s4.17 9 9.13 9c2.68 0 4.7-.88 6.28-2.52 1.62-1.62 2.13-3.91 2.13-5.75 0-.57-.04-1.1-.13-1.54H9.24z"/><path fill="#EA4335" d="M25 6.19c-3.21 0-5.83 2.44-5.83 5.81 0 3.34 2.62 5.81 5.83 5.81s5.83-2.46 5.83-5.81c0-3.37-2.62-5.81-5.83-5.81zm0 9.33c-1.76 0-3.28-1.45-3.28-3.52 0-2.09 1.52-3.52 3.28-3.52s3.28 1.43 3.28 3.52c0 2.07-1.52 3.52-3.28 3.52z"/><path fill="#FBBC05" d="M37.92 6.19c-3.21 0-5.83 2.44-5.83 5.81 0 3.34 2.62 5.81 5.83 5.81s5.83-2.46 5.83-5.81c0-3.37-2.62-5.81-5.83-5.81zm0 9.33c-1.76 0-3.28-1.45-3.28-3.52 0-2.09 1.52-3.52 3.28-3.52s3.28 1.43 3.28 3.52c0 2.07-1.52 3.52-3.28 3.52z"/><path fill="#4285F4" d="M53.5 6.49v.94h-.09c-.57-.68-1.67-1.29-3.06-1.29-2.9 0-5.55 2.55-5.55 5.83 0 3.25 2.65 5.78 5.55 5.78 1.39 0 2.49-.62 3.06-1.32h.09v.83c0 2.22-1.19 3.41-3.1 3.41-1.56 0-2.53-1.12-2.93-2.07l-2.22.92c.64 1.54 2.33 3.43 5.15 3.43 2.99 0 5.52-1.76 5.52-6.05V6.49H53.5zm-2.93 9.03c-1.76 0-3.1-1.5-3.1-3.55 0-2.07 1.34-3.54 3.1-3.54 1.74 0 3.1 1.54 3.1 3.56.01 2.05-1.36 3.53-3.1 3.53z"/><path fill="#34A853" d="M58 0h2.5v18H58z"/><path fill="#EA4335" d="M68.26 15.52c-1.3 0-2.22-.59-2.82-1.76l7.77-3.21-.26-.66c-.48-1.3-1.96-3.7-4.97-3.7-2.99 0-5.48 2.35-5.48 5.81 0 3.26 2.46 5.81 5.74 5.81 2.66 0 4.2-1.63 4.84-2.57l-1.98-1.32c-.66.96-1.56 1.6-2.86 1.6zm-.18-7.15c1.03 0 1.91.53 2.2 1.28l-5.25 2.17c0-2.44 1.73-3.45 3.05-3.45z"/></svg>
+      </div>
+
+      <h1 class="card-title">Reset password</h1>
+      <p class="card-subtitle" style="margin-bottom: 16px;">Create a new password for your account</p>
+
+      <div class="field" id="newpw-field">
+        <div class="pw-wrap">
+          <input type="password" id="new-password" placeholder=" " autocomplete="new-password">
+          <label for="new-password">New password</label>
+          <button class="pw-toggle" id="newpw-toggle" type="button">Show</button>
+        </div>
+      </div>
+
+      <div class="strength-meter">
+        <div class="strength-bar"></div>
+        <div class="strength-bar"></div>
+        <div class="strength-bar"></div>
+        <div class="strength-bar"></div>
+      </div>
+      <div class="strength-text" id="strength-text">Use 8 or more characters with a mix of letters, numbers & symbols</div>
+
+      <div class="field" id="confirm-field">
+        <div class="pw-wrap">
+          <input type="password" id="confirm-password" placeholder=" " autocomplete="new-password">
+          <label for="confirm-password">Confirm password</label>
+          <button class="pw-toggle" id="confirm-toggle" type="button">Show</button>
+        </div>
+        <div class="error-msg" id="confirm-error">Those passwords didn't match. Try again.</div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-text" id="reset-cancel-btn">Cancel</button>
+        <button class="btn-primary" id="save-pw-btn">Save password</button>
+      </div>
+    </div>
+
+    <!-- STEP 6: SUCCESS -->
+    <div class="step" id="step-success">
+      <div class="checkmark">
+        <svg viewBox="0 0 50 50">
+          <polyline points="14,27 22,35 38,18" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h1 class="card-title" id="success-title">Signed in</h1>
+      <p class="success-text" id="success-text">You're now signed in to your Google Account.</p>
+      <div class="button-row" style="justify-content: center; margin-top: 24px;">
+        <button class="btn-primary" id="done-btn">Continue</button>
+      </div>
+    </div>
+
+    <!-- STEP 7: FORGOT EMAIL -->
+    <div class="step" id="step-forgot-email">
+      <div class="logo">
+        <svg viewBox="0 0 74 24" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M9.24 8.19v2.46h5.88c-.18 1.38-.64 2.39-1.34 3.1-.86.86-2.2 1.8-4.54 1.8-3.62 0-6.45-2.92-6.45-6.54s2.83-6.54 6.45-6.54c1.95 0 3.38.77 4.43 1.76L15.4 2.5C13.94 1.08 11.98 0 9.24 0 4.28 0 .11 4.04.11 9s4.17 9 9.13 9c2.68 0 4.7-.88 6.28-2.52 1.62-1.62 2.13-3.91 2.13-5.75 0-.57-.04-1.1-.13-1.54H9.24z"/><path fill="#EA4335" d="M25 6.19c-3.21 0-5.83 2.44-5.83 5.81 0 3.34 2.62 5.81 5.83 5.81s5.83-2.46 5.83-5.81c0-3.37-2.62-5.81-5.83-5.81zm0 9.33c-1.76 0-3.28-1.45-3.28-3.52 0-2.09 1.52-3.52 3.28-3.52s3.28 1.43 3.28 3.52c0 2.07-1.52 3.52-3.28 3.52z"/><path fill="#FBBC05" d="M37.92 6.19c-3.21 0-5.83 2.44-5.83 5.81 0 3.34 2.62 5.81 5.83 5.81s5.83-2.46 5.83-5.81c0-3.37-2.62-5.81-5.83-5.81zm0 9.33c-1.76 0-3.28-1.45-3.28-3.52 0-2.09 1.52-3.52 3.28-3.52s3.28 1.43 3.28 3.52c0 2.07-1.52 3.52-3.28 3.52z"/><path fill="#4285F4" d="M53.5 6.49v.94h-.09c-.57-.68-1.67-1.29-3.06-1.29-2.9 0-5.55 2.55-5.55 5.83 0 3.25 2.65 5.78 5.55 5.78 1.39 0 2.49-.62 3.06-1.32h.09v.83c0 2.22-1.19 3.41-3.1 3.41-1.56 0-2.53-1.12-2.93-2.07l-2.22.92c.64 1.54 2.33 3.43 5.15 3.43 2.99 0 5.52-1.76 5.52-6.05V6.49H53.5zm-2.93 9.03c-1.76 0-3.1-1.5-3.1-3.55 0-2.07 1.34-3.54 3.1-3.54 1.74 0 3.1 1.54 3.1 3.56.01 2.05-1.36 3.53-3.1 3.53z"/><path fill="#34A853" d="M58 0h2.5v18H58z"/><path fill="#EA4335" d="M68.26 15.52c-1.3 0-2.22-.59-2.82-1.76l7.77-3.21-.26-.66c-.48-1.3-1.96-3.7-4.97-3.7-2.99 0-5.48 2.35-5.48 5.81 0 3.26 2.46 5.81 5.74 5.81 2.66 0 4.2-1.63 4.84-2.57l-1.98-1.32c-.66.96-1.56 1.6-2.86 1.6zm-.18-7.15c1.03 0 1.91.53 2.2 1.28l-5.25 2.17c0-2.44 1.73-3.45 3.05-3.45z"/></svg>
+      </div>
+
+      <h1 class="card-title">Find your email</h1>
+      <p class="card-subtitle" style="margin-bottom: 16px;">Enter your recovery email or phone number</p>
+
+      <div class="field" id="recovery-field">
+        <input type="text" id="recovery-input" placeholder=" " autocomplete="off">
+        <label for="recovery-input">Recovery email or phone</label>
+        <div class="error-msg" id="recovery-error"></div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn-text" id="recovery-back-btn">Back</button>
+        <button class="btn-primary" id="recovery-next-btn">Next</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer">
+  <select id="lang-select">
+    <option>English (United States)</option>
+    <option>English (United Kingdom)</option>
+    <option>Español</option>
+    <option>Français</option>
+    <option>Deutsch</option>
+    <option>日本語</option>
+    <option>中文（简体）</option>
+    <option>हिन्दी</option>
+    <option>Português</option>
+    <option>한국어</option>
+  </select>
+  <div class="footer-links">
+    <a href="#">Help</a>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ============ STATE ============
+  const state = {
+    email: '',
+    name: '',
+    currentStep: 'email',
+    verificationCode: '',
+    showPassword: false,
+    showNewPw: false,
+    showConfirmPw: false,
+    recoveryMethod: 'email',
+  };
+
+  // ============ HELPERS ============
+  const $ = id => document.getElementById(id);
+  const steps = document.querySelectorAll('.step');
+  const toast = $('toast');
+
+  function showToast(msg, dur = 3500) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => toast.classList.remove('show'), dur);
+  }
+
+  function goToStep(name) {
+    steps.forEach(s => s.classList.remove('active'));
+    const target = $('step-' + name);
+    if (target) {
+      target.classList.add('active');
+      state.currentStep = name;
+      setTimeout(() => {
+        const inp = target.querySelector('input:not([type=hidden])');
+        if (inp && name !== 'success') inp.focus();
+      }, 280);
+    }
+  }
+
+  function setLoading(btn, loading, originalText) {
+    if (loading) {
+      btn._orig = btn.textContent;
+      btn.innerHTML = '<span class="spinner"></span>';
+      btn.disabled = true;
+    } else {
+      btn.innerHTML = originalText || btn._orig || 'Next';
+      btn.disabled = false;
+    }
+  }
+
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function maskEmail(email) {
+    const [u, d] = email.split('@');
+    if (!d) return email;
+    return u.slice(0, 2) + '••••@' + d;
+  }
+
+  function nameFromEmail(email) {
+    const u = email.split('@')[0];
+    return u.split(/[._\-]/).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+  }
+
+  // ============ STEP 1: EMAIL ============
+  const emailInput = $('email-input');
+  const emailField = $('email-field');
+
+  emailInput.addEventListener('input', () => {
+    emailField.classList.remove('error');
+  });
+
+  emailInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); submitEmail(); }
+  });
+
+  function submitEmail() {
+    const email = emailInput.value.trim();
+    if (!email) {
+      emailField.classList.add('error');
+      $('email-error').textContent = 'Enter an email or phone number';
+      return;
+    }
+    if (!validateEmail(email)) {
+      emailField.classList.add('error');
+      $('email-error').textContent = "Couldn't find your Google Account";
+      return;
+    }
+    const btn = $('email-next-btn');
+    setLoading(btn, true);
+    setTimeout(() => {
+      state.email = email;
+      state.name = nameFromEmail(email);
+      $('display-email').textContent = email;
+      $('user-avatar').textContent = email.charAt(0).toUpperCase();
+      $('password-title').textContent = 'Welcome';
+      $('recovery-email').textContent = maskEmail(email);
+      $('code-email').textContent = maskEmail(email);
+      setLoading(btn, false, 'Next');
+      goToStep('password');
+    }, 700);
+  }
+
+  $('email-next-btn').addEventListener('click', submitEmail);
+  $('create-account-btn').addEventListener('click', () => {
+    showToast('Account creation is not available in this demo');
+  });
+  $('forgot-email-btn').addEventListener('click', () => goToStep('forgot-email'));
+
+  // ============ STEP 2: PASSWORD ============
+  const passwordInput = $('password-input');
+  const passwordField = $('password-field');
+  const capsWarning = $('caps-warning');
+
+  passwordInput.addEventListener('input', () => {
+    passwordField.classList.remove('error');
+  });
+
+  passwordInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); submitPassword(); }
+    if (e.getModifierState && e.getModifierState('CapsLock')) {
+      capsWarning.classList.add('show');
+    } else {
+      capsWarning.classList.remove('show');
+    }
+  });
+
+  passwordInput.addEventListener('keyup', e => {
+    if (!e.getModifierState || !e.getModifierState('CapsLock')) {
+      capsWarning.classList.remove('show');
+    }
+  });
+
+  $('pw-toggle').addEventListener('click', () => {
+    state.showPassword = !state.showPassword;
+    passwordInput.type = state.showPassword ? 'text' : 'password';
+    $('pw-toggle').textContent = state.showPassword ? 'Hide' : 'Show';
+    passwordInput.focus();
+  });
+
+  function submitPassword() {
+    const pwd = passwordInput.value;
+    if (!pwd) {
+      passwordField.classList.add('error');
+      $('password-error').textContent = 'Enter a password';
+      return;
+    }
+    const btn = $('pw-next-btn');
+    setLoading(btn, true);
+    setTimeout(() => {
+      setLoading(btn, false, 'Next');
+      // Demo: any password works
+      $('success-title').textContent = 'Signed in';
+      $('success-text').textContent = "You're now signed in to your Google Account.";
+      goToStep('success');
+      setTimeout(() => showToast('Signed in as ' + state.email + ' (demo)'), 600);
+    }, 800);
+  }
+
+  $('pw-next-btn').addEventListener('click', submitPassword);
+  $('pw-back-btn').addEventListener('click', () => goToStep('email'));
+  $('change-account-btn').addEventListener('click', () => {
+    passwordInput.value = '';
+    goToStep('email');
+  });
+  $('forgot-pw-btn').addEventListener('click', () => goToStep('forgot'));
+
+  // ============ STEP 3: FORGOT PASSWORD ============
+  document.querySelectorAll('.recovery-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.recovery-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      state.recoveryMethod = opt.dataset.method;
+    });
+  });
+
+  $('send-code-btn').addEventListener('click', () => {
+    const btn = $('send-code-btn');
+    setLoading(btn, true);
+    setTimeout(() => {
+      state.verificationCode = String(Math.floor(100000 + Math.random() * 900000));
+      $('demo-code').textContent = state.verificationCode;
+      // Clear code inputs
+      document.querySelectorAll('.code-input').forEach(i => i.value = '');
+      setLoading(btn, false, 'Send');
+      goToStep('code');
+      setTimeout(() => showToast('Verification code sent (demo: ' + state.verificationCode + ')', 5000), 300);
+    }, 800);
+  });
+
+  $('forgot-cancel-btn').addEventListener('click', () => goToStep('password'));
+  $('try-another-btn').addEventListener('click', () => {
+    showToast('Other recovery options are not available in this demo');
+  });
+
+  // ============ STEP 4: CODE ============
+  const codeInputs = document.querySelectorAll('.code-input');
+  codeInputs.forEach((inp, i) => {
+    inp.addEventListener('input', e => {
+      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+      if (e.target.value.length === 1 && i < codeInputs.length - 1) {
+        codeInputs[i + 1].focus();
+      }
+    });
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !e.target.value && i > 0) {
+        codeInputs[i - 1].focus();
+      }
+      if (e.key === 'ArrowLeft' && i > 0) codeInputs[i - 1].focus();
+      if (e.key === 'ArrowRight' && i < codeInputs.length - 1) codeInputs[i + 1].focus();
+      if (e.key === 'Enter') { e.preventDefault(); verifyCode(); }
+    });
+    inp.addEventListener('paste', e => {
+      e.preventDefault();
+      const txt = (e.clipboardData.getData('text') || '').replace(/[^0-9]/g, '').slice(0, 6);
+      txt.split('').forEach((c, idx) => { if (codeInputs[idx]) codeInputs[idx].value = c; });
+      if (codeInputs[txt.length]) codeInputs[txt.length].focus();
+    });
+  });
+
+  function verifyCode() {
+    const code = Array.from(codeInputs).map(i => i.value).join('');
+    if (code.length !== 6) {
+      showToast('Please enter all 6 digits');
+      return;
+    }
+    const btn = $('verify-btn');
+    setLoading(btn, true);
+    setTimeout(() => {
+      setLoading(btn, false, 'Verify');
+      if (code === state.verificationCode) {
+        $('new-password').value = '';
+        $('confirm-password').value = '';
+        checkStrength();
+        $('confirm-field').classList.remove('error');
+        goToStep('reset');
+      } else {
+        showToast('Wrong code. The demo code is ' + state.verificationCode, 4000);
+        codeInputs.forEach(i => { i.value = ''; i.style.borderColor = ''; });
+        codeInputs[0].focus();
+        codeInputs.forEach(i => i.style.borderColor = 'var(--error)');
+      }
+    }, 700);
+  }
+
+  $('verify-btn').addEventListener('click', verifyCode);
+  $('code-cancel-btn').addEventListener('click', () => goToStep('forgot'));
+  $('resend-code-btn').addEventListener('click', () => {
+    state.verificationCode = String(Math.floor(100000 + Math.random() * 900000));
+    $('demo-code').textContent = state.verificationCode;
+    showToast('New code sent (demo: ' + state.verificationCode + ')', 5000);
+  });
+
+  // ============ STEP 5: RESET PASSWORD ============
+  const newPw = $('new-password');
+  const confirmPw = $('confirm-password');
+
+  function checkStrength() {
+    const pwd = newPw.value;
+    const bars = document.querySelectorAll('.strength-bar');
+    const txt = $('strength-text');
+    bars.forEach(b => b.className = 'strength-bar');
+
+    if (pwd.length === 0) {
+      txt.textContent = 'Use 8 or more characters with a mix of letters, numbers & symbols';
+      return;
+    }
+    let s = 0;
+    if (pwd.length >= 8) s++;
+    if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) s++;
+    if (/[0-9]/.test(pwd)) s++;
+    if (/[^A-Za-z0-9]/.test(pwd)) s++;
+
+    if (s <= 1) { bars[0].classList.add('weak'); txt.textContent = 'Weak password'; }
+    else if (s === 2) { bars[0].classList.add('medium'); bars[1].classList.add('medium'); txt.textContent = 'Medium strength'; }
+    else if (s === 3) { bars[0].classList.add('strong'); bars[1].classList.add('strong'); bars[2].classList.add('strong'); txt.textContent = 'Strong password'; }
+    else { bars.forEach(b => b.classList.add('strong')); txt.textContent = 'Very strong password'; }
+  }
+
+  newPw.addEventListener('input', checkStrength);
+  newPw.addEventListener('input', () => $('confirm-field').classList.remove('error'));
+  confirmPw.addEventListener('input', () => $('confirm-field').classList.remove('error'));
+
+  $('newpw-toggle').addEventListener('click', () => {
+    state.showNewPw = !state.showNewPw;
+    newPw.type = state.showNewPw ? 'text' : 'password';
+    $('newpw-toggle').textContent = state.showNewPw ? 'Hide' : 'Show';
+    newPw.focus();
+  });
+
+  $('confirm-toggle').addEventListener('click', () => {
+    state.showConfirmPw = !state.showConfirmPw;
+    confirmPw.type = state.showConfirmPw ? 'text' : 'password';
+    $('confirm-toggle').textContent = state.showConfirmPw ? 'Hide' : 'Show';
+    confirmPw.focus();
+  });
+
+  $('save-pw-btn').addEventListener('click', () => {
+    const p1 = newPw.value, p2 = confirmPw.value;
+    if (p1.length < 8) { showToast('Password must be at least 8 characters'); return; }
+    if (p1 !== p2) { $('confirm-field').classList.add('error'); return; }
+    const btn = $('save-pw-btn');
+    setLoading(btn, true);
+    setTimeout(() => {
+      setLoading(btn, false, 'Save password');
+      $('success-title').textContent = 'Password changed';
+      $('success-text').textContent = 'Your password has been changed successfully.';
+      goToStep('success');
+      setTimeout(() => showToast('Password updated (demo)'), 600);
+    }, 900);
+  });
+
+  $('reset-cancel-btn').addEventListener('click', () => goToStep('code'));
+
+  // ============ STEP 6: SUCCESS ============
+  $('done-btn').addEventListener('click', () => {
+    // Reset everything
+    emailInput.value = '';
+    passwordInput.value = '';
+    newPw.value = '';
+    confirmPw.value = '';
+    checkStrength();
+    goToStep('email');
+    showToast('Demo session reset');
+  });
+
+  // ============ STEP 7: FORGOT EMAIL ============
+  $('recovery-next-btn').addEventListener('click', () => {
+    const v = $('recovery-input').value.trim();
+    if (!v) {
+      $('recovery-field').classList.add('error');
+      $('recovery-error').textContent = 'Enter a recovery email or phone number';
+      return;
+    }
+    showToast('Account lookup is not available in this demo');
+  });
+
+  $('recovery-input').addEventListener('input', () => $('recovery-field').classList.remove('error'));
+  $('recovery-back-btn').addEventListener('click', () => goToStep('email'));
+
+  // ============ INIT ============
+  setTimeout(() => emailInput.focus(), 200);
+
+  // Disable button focus outline only on mouse, keep on keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      // ESC returns to email from most steps
+      if (['password','forgot','code','reset','forgot-email'].includes(state.currentStep)) {
+        goToStep('email');
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
